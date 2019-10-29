@@ -79,6 +79,7 @@ import { Vue, Component, Prop } from "vue-property-decorator";
 import { Base64 } from 'js-base64';
 import Background from "./model/Background";
 import ModuleNameText from './view/ModuleNameText.vue';
+import FONT_CSS from './fonts/NodestoCyrillic_embedded.css';
 
 const IMAGE_WIDTH = 1189;
 const IMAGE_HEIGHT = 585;
@@ -213,6 +214,9 @@ export default class ImageGenerator extends Vue {
     onDownload() {
         // Need to replace image links with data URLs
         const svg = this.$refs.svg as HTMLElement;
+        const styleEl = document.createElement('style');
+        styleEl.textContent = FONT_CSS;
+        svg.insertAdjacentElement('afterbegin', styleEl);
 
         for (let img of Array.from(svg.getElementsByTagName("image"))) {
             if (img.getAttribute('xlink:href')!.startsWith('data:')) {

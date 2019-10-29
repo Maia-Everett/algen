@@ -29,6 +29,7 @@
 		"webpack-hot-middleware": "^2.24.3"
 	},
 	"dependencies": {
-		"vue-class-component": "^7.1.0"
+		"vue-class-component": "^7.1.0",
+		"vue-property-decorator": "^8.3.0"
 	}
 }

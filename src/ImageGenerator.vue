@@ -1,18 +1,25 @@
 <template>
     <div class="image-generator">
         <div class="image-generator__form">
-            <b-form-group label="Логотип Лиги">
-                <b-form-radio-group v-model="alLogoPos" name="al-logo-pos">
-                    <b-form-radio value="LEFT">Слева</b-form-radio>
-                    <b-form-radio value="CENTER">По центру</b-form-radio>
-                    <b-form-radio value="RIGHT">Справа</b-form-radio>
-                </b-form-radio-group>
-            </b-form-group>
-            <b-form-group label="Код модуля">
-                <b-form-input v-model="moduleCode" />
-            </b-form-group>
             <div>
-                <b-button variant="primary" @click="onDownload">Скачать</b-button>
+                <b-form-group label="Логотип Лиги">
+                    <b-form-radio-group v-model="alLogoPos" name="al-logo-pos">
+                        <b-form-radio value="LEFT">Слева</b-form-radio>
+                        <b-form-radio value="CENTER">По центру</b-form-radio>
+                        <b-form-radio value="RIGHT">Справа</b-form-radio>
+                    </b-form-radio-group>
+                </b-form-group>
+                <div>Левая кнопка перемещает фон, колёсико мыши масштабирует.</div>
+            </div>
+            <div>
+                <b-form-group label="Строка 1" label-cols="3"><b-form-input v-model="line1" /></b-form-group>
+                <b-form-group label="Строка 2" label-cols="3"><b-form-input v-model="line2" /></b-form-group>
+            </div>
+            <div>
+                <b-form-group label="Код модуля" label-cols="4"><b-form-input v-model="moduleCode" placeholder="Например, DDEX 4-5" /></b-form-group>
+                <div class="image-generator__button_container">
+                    <b-button variant="primary" @click="onDownload">Скачать</b-button>
+                </div>
             </div>
         </div>
         <svg
@@ -36,33 +43,46 @@
                 image-rendering="optimizeQuality"
             />
             <image x="0" y="0" xlink:href="img/tower_logo.png" onmousedown="event.preventDefault()" />
-            <image :x="AL_LOGO_POSITIONS[alLogoPos]" y="3" xlink:href="img/al_logo.png" onmousedown="event.preventDefault()" />
+            <image :x="AL_LOGO_POSITIONS[alLogoPos]" y="5" xlink:href="img/al_logo.png" onmousedown="event.preventDefault()" />
             <text
-                :x="IMAGE_WIDTH - 18"
+                :x="IMAGE_WIDTH - 13"
                 :y="IMAGE_HEIGHT - 10"
                 text-anchor="end"
                 alignment-baseline="bottom"
-				style="font-family: 'Nodesto Cyrillic'; font-size: 34px; text-transform: uppercase; fill: white; stroke: black; stroke-width: 2"
+				style="font-family: 'Nodesto Cyrillic'; font-size: 34pt; text-transform: uppercase; fill: white; stroke: #231f20; stroke-width: 2"
                 stroke-linecap="round"
                 stroke-linejoin="round"
             >{{moduleCode}}</text>
 			<text
-                :x="IMAGE_WIDTH - 18"
+                :x="IMAGE_WIDTH - 13"
                 :y="IMAGE_HEIGHT - 10"
                 text-anchor="end"
                 alignment-baseline="bottom"
-				style="font-family: 'Nodesto Cyrillic'; font-size: 34px; text-transform: uppercase; fill: white"
+				style="font-family: 'Nodesto Cyrillic'; font-size: 34pt; text-transform: uppercase; fill: white"
             >{{moduleCode}}</text>
+            <module-name-text
+                :x="IMAGE_WIDTH / 2"
+                :y="IMAGE_HEIGHT - 13 - 60 - 4"
+                :text="line1Text"
+            />
+            <module-name-text
+                :x="IMAGE_WIDTH / 2"
+                :y="IMAGE_HEIGHT - 13"
+                :text="line2Text"
+                :hasPrevLine="!!line1Text"
+            />
         </svg>
         <canvas ref="canvas" v-show="false" :width="IMAGE_WIDTH" :height="IMAGE_HEIGHT"></canvas>
         <img ref="img" v-show="false" @load="onSVGImageLoaded" />
-        <a ref="downloadLink" v-show="false" download="picture.png"></a>
+        <a ref="downloadLink" v-show="false" :download="(moduleCode || 'picture') + '.png'"></a>
     </div>
 </template>
 
 <script lang="ts">
 import { Vue, Component, Prop } from "vue-property-decorator";
+import { Base64 } from 'js-base64';
 import Background from "./model/Background";
+import ModuleNameText from './view/ModuleNameText.vue';
 
 const IMAGE_WIDTH = 1189;
 const IMAGE_HEIGHT = 585;
@@ -74,7 +94,11 @@ const AL_LOGO_POSITIONS = {
     RIGHT: IMAGE_WIDTH - AL_LOGO_WIDTH - 11
 };
 
-@Component({})
+@Component({
+    components: {
+        'module-name-text': ModuleNameText
+    }
+})
 export default class ImageGenerator extends Vue {
     @Prop({ type: Object, required: true }) readonly background!: Background;
 
@@ -89,9 +113,19 @@ export default class ImageGenerator extends Vue {
     mouseDownX = 0;
     mouseDownY = 0;
 
-    alLogoPos = "CENTER";
+    alLogoPos = 'CENTER';
 
-    moduleCode = "";
+    moduleCode = '';
+    line1 = '';
+    line2 = '';
+
+    get line1Text() {
+        return (this.line1 && this.line2) ? this.line1 : '';
+    }
+
+    get line2Text() {
+        return this.line2 || this.line1;
+    }
 
     created() {
         // Stretch so that image covers entire SVG
@@ -194,8 +228,6 @@ export default class ImageGenerator extends Vue {
             canvas.width = rect.width;
             canvas.height = rect.height;
 
-            alert(JSON.stringify(rect));
-            
             let g = canvas.getContext('2d')!;
             g.drawImage(img, 0, 0);
 
@@ -205,7 +237,7 @@ export default class ImageGenerator extends Vue {
         const xml = new XMLSerializer().serializeToString(svg);
 
         const img = this.$refs.img as HTMLImageElement;
-        img.src = "data:image/svg+xml;base64," + btoa(xml);
+        img.src = "data:image/svg+xml;base64," + Base64.encode(xml);
     }
 
     onSVGImageLoaded() {
@@ -213,7 +245,7 @@ export default class ImageGenerator extends Vue {
         const canvas = this.$refs.canvas as HTMLCanvasElement;
 
         const g = canvas.getContext("2d")!;
-        g.clearRect(0, 0, this.IMAGE_WIDTH, this.IMAGE_HEIGHT);
+        g.clearRect(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT);
         g.drawImage(img, 0, 0);
 
         const downloadLink = this.$refs.downloadLink as HTMLAnchorElement;
@@ -225,7 +257,7 @@ export default class ImageGenerator extends Vue {
 
 <style>
 .image-generator__form {
-    margin-bottom: 1rem;
+    margin-bottom: 0.6rem;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -239,5 +271,9 @@ export default class ImageGenerator extends Vue {
 
 .image-generator__svg:active {
     cursor: grabbing;
+}
+
+.image-generator__button_container {
+    text-align: right;
 }
 </style>

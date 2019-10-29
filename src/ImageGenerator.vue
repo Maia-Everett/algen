@@ -18,6 +18,7 @@
             <div>
                 <b-form-group label="Код модуля" label-cols="4"><b-form-input v-model="moduleCode" placeholder="Например, DDEX 4-5" /></b-form-group>
                 <div class="image-generator__button_container">
+                    <b-button variant="outline-dark" @click="onReset">Сброс</b-button>
                     <b-button variant="primary" @click="onDownload">Скачать</b-button>
                 </div>
             </div>
@@ -246,6 +247,10 @@ export default class ImageGenerator extends Vue {
         const downloadLink = this.$refs.downloadLink as HTMLAnchorElement;
         downloadLink.href = canvas.toDataURL("image/png");
         downloadLink.click();
+    }
+
+    onReset() {
+        this.$emit('reset');
     }
 }
 </script>

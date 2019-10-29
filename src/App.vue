@@ -2,7 +2,7 @@
     <div class="app">
         <h1>Генератор картинок башенной Лиги</h1>
         <image-loader v-if="!background" @load="onImageLoaded" />
-        <image-generator v-else :background="background" />
+        <image-generator v-else :background="background" @reset="reset" />
     </div>
 </template>
 
@@ -33,6 +33,10 @@ export default class App extends Vue {
 
     onImageLoaded(background: Background) {
         this.background = background;
+    }
+
+    reset() {
+        this.background = null;
     }
 }
 </script>

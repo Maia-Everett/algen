@@ -5,7 +5,9 @@
 	"author": "Maia Everett <maia@everett.one>",
 	"private": true,
 	"scripts": {
-		"start": "webpack-dev-server"
+		"start": "webpack-dev-server",
+		"build": "rm dist/js/*; webpack --mode production",
+		"deploy": "bash deploy.sh"
 	},
 	"browserslist": [
 		"> 1%",

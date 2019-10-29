@@ -11,7 +11,7 @@ import 'bootstrap-vue/dist/bootstrap-vue.css';
 
 import Vue from 'vue';
 import Component from 'vue-class-component';
-import { BButton, BFormGroup, BFormRadio, BFormRadioGroup } from 'bootstrap-vue';
+import { BButton, BFormGroup, BFormRadio, BFormRadioGroup, BFormInput } from 'bootstrap-vue';
 import ImageLoader from './ImageLoader.vue';
 import ImageGenerator from './ImageGenerator.vue';
 import Background from './model/Background';
@@ -20,6 +20,7 @@ Vue.component('b-button', BButton);
 Vue.component('b-form-group', BFormGroup);
 Vue.component('b-form-radio', BFormRadio);
 Vue.component('b-form-radio-group', BFormRadioGroup);
+Vue.component('b-form-input', BFormInput);
 
 @Component({
     components: {

@@ -35,14 +35,16 @@
                 :xlink:href="background.url"
                 image-rendering="optimizeQuality"
             />
-            <image x="0" y="0" xlink:href="img/tower_logo.png" />
-            <image :x="AL_LOGO_POSITIONS[alLogoPos]" y="3" xlink:href="img/al_logo.png" />
+            <image x="0" y="0" xlink:href="img/tower_logo.png" onmousedown="event.preventDefault()" />
+            <image :x="AL_LOGO_POSITIONS[alLogoPos]" y="3" xlink:href="img/al_logo.png" onmousedown="event.preventDefault()" />
             <text
                 :x="IMAGE_WIDTH - 18"
                 :y="IMAGE_HEIGHT - 10"
                 text-anchor="end"
                 alignment-baseline="bottom"
-				style="font-family: 'Nodesto Cyrillic'; font-size: 34px; text-transform: uppercase; fill: white; stroke: black; stroke-width: 1"
+				style="font-family: 'Nodesto Cyrillic'; font-size: 34px; text-transform: uppercase; fill: white; stroke: black; stroke-width: 2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
             >{{moduleCode}}</text>
 			<text
                 :x="IMAGE_WIDTH - 18"
@@ -137,6 +139,8 @@ export default class ImageGenerator extends Vue {
 
         this.scale = newScale;
         this.clampBGOffset();
+
+        e.preventDefault();
     }
 
     onDragStart(e: MouseEvent) {
@@ -177,7 +181,27 @@ export default class ImageGenerator extends Vue {
     }
 
     onDownload() {
+        // Need to replace image links with data URLs
         const svg = this.$refs.svg as HTMLElement;
+
+        for (let img of Array.from(svg.getElementsByTagName("image"))) {
+            if (img.getAttribute('xlink:href')!.startsWith('data:')) {
+                continue;
+            }
+
+            const canvas = document.createElement('canvas') as HTMLCanvasElement;
+            const rect = img.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+
+            alert(JSON.stringify(rect));
+            
+            let g = canvas.getContext('2d')!;
+            g.drawImage(img, 0, 0);
+
+            img.setAttribute('xlink:href', canvas.toDataURL());
+        }
+
         const xml = new XMLSerializer().serializeToString(svg);
 
         const img = this.$refs.img as HTMLImageElement;

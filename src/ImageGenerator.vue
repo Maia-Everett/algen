@@ -1,11 +1,25 @@
 <template>
 	<div class="image-generator">
 		<div class="image-generator__form">
-
+			<b-form-group label="Логотип Лиги">
+				<b-form-radio-group v-model="alLogoPos" name="al-logo-pos">
+				<b-form-radio value="LEFT">Слева</b-form-radio>
+				<b-form-radio value="CENTER">По центру</b-form-radio>
+				<b-form-radio value="RIGHT">Справа</b-form-radio>
+				</b-form-radio-group>
+			</b-form-group>
+			<div>
+				<b-button variant="primary" @click="onDownload">Скачать</b-button>
+			</div>
 		</div>
-		<svg class="image-generator__svg" xmlns="http://www.w3.org/2000/svg" :width="`${IMAGE_WIDTH}px`" :height="`${IMAGE_HEIGHT}px`" :viewBox="`0 0 ${IMAGE_WIDTH} ${IMAGE_HEIGHT}`" @mousedown="onDragStart" @mousemove="onDragMove" @wheel="onWheel">
+		<svg ref="svg" class="image-generator__svg" xmlns="http://www.w3.org/2000/svg" :width="`${IMAGE_WIDTH}px`" :height="`${IMAGE_HEIGHT}px`" :viewBox="`0 0 ${IMAGE_WIDTH} ${IMAGE_HEIGHT}`" @mousedown="onDragStart" @mousemove="onDragMove" @wheel="onWheel">
 			<image :x="bgX" :y="bgY" :width="background.width * scale" :height="background.height * scale" :xlink:href="background.url" image-rendering="optimizeQuality" />
+			<image x="0" y="0" xlink:href="img/tower_logo.png" />
+			<image :x="AL_LOGO_POSITIONS[alLogoPos]" y="3" xlink:href="img/al_logo.png" />
 		</svg>
+		<canvas ref="canvas" v-show="false" :width="IMAGE_WIDTH" :height="IMAGE_HEIGHT"></canvas>
+		<img ref="img" v-show="false" @load="onSVGImageLoaded" />
+		<a ref="downloadLink" v-show="false" download="picture.png"></a>
 	</div>
 </template>
 
@@ -15,6 +29,13 @@ import Background from './model/Background'
 
 const IMAGE_WIDTH = 1189;
 const IMAGE_HEIGHT = 585;
+const AL_LOGO_WIDTH = 383;
+
+const AL_LOGO_POSITIONS = {
+	LEFT: 11,
+	CENTER: (IMAGE_WIDTH - AL_LOGO_WIDTH) / 2,
+	RIGHT: IMAGE_WIDTH - AL_LOGO_WIDTH - 11;
+}
 
 @Component({})
 export default class ImageGenerator extends Vue {
@@ -22,6 +43,7 @@ export default class ImageGenerator extends Vue {
 
 	IMAGE_WIDTH = IMAGE_WIDTH
 	IMAGE_HEIGHT = IMAGE_HEIGHT
+	AL_LOGO_POSITIONS = AL_LOGO_POSITIONS
 
 	bgX = 0
 	bgY = 0
@@ -29,6 +51,8 @@ export default class ImageGenerator extends Vue {
 
 	mouseDownX = 0
 	mouseDownY = 0
+
+	alLogoPos = 'CENTER'
 
 	created() {
 		// Stretch so that image covers entire SVG
@@ -114,11 +138,41 @@ export default class ImageGenerator extends Vue {
 			this.bgY = IMAGE_HEIGHT - (height * this.scale);
 		}
 	}
+
+	onDownload() {
+		const svg = this.$refs.svg as HTMLElement;
+		const xml = new XMLSerializer().serializeToString(svg);
+
+		const img = this.$refs.img as HTMLImageElement;
+		img.src = 'data:image/svg+xml;base64,' + btoa(xml);
+	}
+
+	onSVGImageLoaded() {
+		const img = this.$refs.img as HTMLImageElement;
+		const canvas = this.$refs.canvas as HTMLCanvasElement;
+
+		const g = canvas.getContext("2d")!;
+		g.clearRect(0, 0, this.IMAGE_WIDTH, this.IMAGE_HEIGHT);
+		g.drawImage(img, 0, 0);
+
+		const downloadLink = this.$refs.downloadLink as HTMLAnchorElement;
+		downloadLink.href = canvas.toDataURL("image/png");
+		downloadLink.click();
+	}
 }
 </script>
 
 <style>
+.image-generator__form {
+	margin-bottom: 1rem;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+}
+
 .image-generator__svg {
+	display: block;
+	margin: auto;
 	cursor: grab;
 }
 

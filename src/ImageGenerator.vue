@@ -62,14 +62,9 @@
             >{{moduleCode}}</text>
             <module-name-text
                 :x="IMAGE_WIDTH / 2"
-                :y="IMAGE_HEIGHT - 13 - 60 - 4"
-                :text="line1Text"
-            />
-            <module-name-text
-                :x="IMAGE_WIDTH / 2"
                 :y="IMAGE_HEIGHT - 13"
-                :text="line2Text"
-                :hasPrevLine="!!line1Text"
+                :line1="line1Text"
+                :line2="line2Text"
             />
         </svg>
         <canvas ref="canvas" v-show="false" :width="IMAGE_WIDTH" :height="IMAGE_HEIGHT"></canvas>

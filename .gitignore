@@ -1,0 +1,5 @@
+/node_modules
+.directory
+/dist/index.html
+/dist/js/*
+/.vscode/settings.json

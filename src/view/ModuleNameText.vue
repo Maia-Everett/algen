@@ -5,7 +5,7 @@
 			:y="y - GAP"
 			text-anchor="middle"
 			alignment-baseline="bottom"
-			style="font-family: 'Nodesto Cyrillic'; font-size: 60pt; text-transform: uppercase; fill: white; stroke: #f31521; stroke-width: 6"
+			style="font-family: 'Nodesto Cyrillic'; font-size: 60pt; text-transform: uppercase; fill: white; stroke: #f31521; stroke-width: 8"
 			stroke-linecap="round"
 			stroke-linejoin="round"
 		>{{line1}}</text>
@@ -14,7 +14,7 @@
 			:y="y"
 			text-anchor="middle"
 			alignment-baseline="bottom"
-			style="font-family: 'Nodesto Cyrillic'; font-size: 60pt; text-transform: uppercase; fill: white; stroke: #f31521; stroke-width: 6"
+			style="font-family: 'Nodesto Cyrillic'; font-size: 60pt; text-transform: uppercase; fill: white; stroke: #f31521; stroke-width: 8"
 			stroke-linecap="round"
 			stroke-linejoin="round"
 		>{{line2}}</text>

@@ -1,7 +1,7 @@
 const path = require('path')
 const webpack = require('webpack')
 
-const VueLoaderPlugin = require('vue-loader/lib/plugin');
+const VueLoaderPlugin = require('vue-loader').VueLoaderPlugin;
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
@@ -49,12 +49,7 @@ module.exports = {
                     esModule: true
                     // other vue-loader options go here
                 }
-            },
-            {
-                test: /\.js$/,
-                loader: 'babel-loader',
-                exclude: /node_modules/
-            },            
+            },        
             {
                 test: /\.(png|jpg|gif|svg)$/,
                 loader: 'file-loader',

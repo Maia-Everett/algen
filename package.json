@@ -16,7 +16,7 @@
 	],
 	"devDependencies": {
 		"@types/js-base64": "^2.3.1",
-		"bootstrap": "^4.3.1",
+		"bootstrap": "^5.0.0",
 		"bootstrap-vue": "^2.0.0-rc.14",
 		"css-loader": "^6.7.2",
 		"file-loader": "^6.2.0",
